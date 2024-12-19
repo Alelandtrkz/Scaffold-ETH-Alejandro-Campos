@@ -48,10 +48,15 @@
   },
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.17",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10"
   },
   "engines": {
     "node": ">=18.18.0"
+  },
+  "dependencies": {
+    "ethers": "5"
   }
 }

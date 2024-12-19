@@ -2,12 +2,45 @@
 
 import Link from "next/link";
 import type { NextPage } from "next";
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { useState } from "react";
+
+const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const CONTRACT_ABI = [
+  {
+    inputs: [{ internalType: "uint256", name: "proposalIndex", type: "uint256" }],
+    name: "vote",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "winnerName",
+    outputs: [{ internalType: "string", name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+];
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
+  const [proposalIndex, setProposalIndex] = useState(0);
+
+  const { data: winnerName } = useContractRead({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: "winnerName",
+  });
+
+  const { write: vote } = useContractWrite({
+    address: CONTRACT_ADDRESS,
+    abi: CONTRACT_ABI,
+    functionName: "vote",
+    args: [proposalIndex],
+  });
 
   return (
     <>
@@ -21,6 +54,25 @@ const Home: NextPage = () => {
             <p className="my-2 font-medium">Connected Address:</p>
             <Address address={connectedAddress} />
           </div>
+
+          <div className="my-4">
+            <label className="block mb-2">Enter Proposal Index to Vote:</label>
+            <input
+              type="number"
+              className="input input-bordered w-full max-w-xs"
+              value={proposalIndex}
+              onChange={(e) => setProposalIndex(Number(e.target.value))}
+            />
+            <button className="btn btn-primary mt-2" onClick={() => vote?.()}>
+              Vote
+            </button>
+          </div>
+
+          <div className="my-4">
+            <p className="text-lg font-bold">Winning Proposal:</p>
+            <p>{typeof winnerName === "string" && winnerName.trim() !== "" ? winnerName : "No winner yet"}</p>
+          </div>
+
           <p className="text-center text-lg">
             Get started by editing{" "}
             <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">

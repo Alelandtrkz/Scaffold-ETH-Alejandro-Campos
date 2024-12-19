@@ -4,13 +4,13 @@ import { YourContract } from "../typechain-types";
 
 describe("YourContract", function () {
   let yourContract: YourContract;
-  let _owner;
+  let owner;
 
   before(async () => {
     [owner] = await ethers.getSigners();
     const yourContractFactory = await ethers.getContractFactory("YourContract");
 
-    // Pasa un array de nombres de propuestas al desplegar el contrato
+    
     const proposalNames = ["Option1", "Option2", "Option3"];
     yourContract = (await yourContractFactory.deploy(proposalNames)) as YourContract;
     await yourContract.waitForDeployment();
